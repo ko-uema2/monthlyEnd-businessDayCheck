@@ -1,0 +1,54 @@
+import type { calendar_v3 } from "googleapis";
+import { BusinessDayChecker } from "../src/businessDayChecker";
+
+describe("BusinessDayChecker", () => {
+	// 祝日データのユーティリティ
+	const makeHoliday = (dateStr: string): calendar_v3.Schema$Event => ({
+		start: { dateTime: new Date(dateStr).toISOString() },
+	});
+
+	test("月末が平日で祝日でない場合、その日が最終営業日", () => {
+		// 2024-07-31(水)は平日
+		const checker = new BusinessDayChecker([]);
+		expect(checker.isLastBusinessDay(new Date("2024-07-31"))).toBe(true);
+		expect(checker.isLastBusinessDay(new Date("2024-07-30"))).toBe(false);
+	});
+
+	test("月末が土日の場合、直前の平日が最終営業日", () => {
+		// 2024-08-31(土)
+		const checker = new BusinessDayChecker([]);
+		expect(checker.isLastBusinessDay(new Date("2024-08-30"))).toBe(true); // 金曜
+		expect(checker.isLastBusinessDay(new Date("2024-08-31"))).toBe(false); // 土曜
+	});
+
+	test("月末が祝日の場合、直前の平日が最終営業日", () => {
+		// 2024-07-31(水)が祝日
+		const holidays = [makeHoliday("2024-07-31")];
+		const checker = new BusinessDayChecker(holidays);
+		expect(checker.isLastBusinessDay(new Date("2024-07-30"))).toBe(true); // 前日が最終営業日
+		expect(checker.isLastBusinessDay(new Date("2024-07-31"))).toBe(false);
+	});
+
+	test("月末が土日かつ直前の平日が祝日の場合、さらに前の平日が最終営業日", () => {
+		// 2024-08-31(土), 2024-08-30(金)が祝日
+		const holidays = [makeHoliday("2024-08-30")];
+		const checker = new BusinessDayChecker(holidays);
+		expect(checker.isLastBusinessDay(new Date("2024-08-29"))).toBe(true); // 木曜
+		expect(checker.isLastBusinessDay(new Date("2024-08-30"))).toBe(false);
+		expect(checker.isLastBusinessDay(new Date("2024-08-31"))).toBe(false);
+	});
+
+	test("祝日がない場合の挙動", () => {
+		const checker = new BusinessDayChecker([]);
+		expect(checker.isLastBusinessDay(new Date("2024-09-30"))).toBe(true);
+	});
+
+	test("祝日がdateで与えられる場合は無視される(現実の仕様に注意)", () => {
+		// 実装上dateTimeしか見ていないためdateのみの祝日は無視される
+		const holidays: calendar_v3.Schema$Event[] = [
+			{ start: { date: "2024-07-31" } },
+		];
+		const checker = new BusinessDayChecker(holidays);
+		expect(checker.isLastBusinessDay(new Date("2024-07-31"))).toBe(true); // 無視される
+	});
+});
