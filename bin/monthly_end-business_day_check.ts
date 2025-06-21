@@ -1,20 +1,44 @@
 #!/usr/bin/env node
-import * as cdk from 'aws-cdk-lib';
-import { MonthlyEndBusinessDayCheckStack } from '../lib/monthly_end-business_day_check-stack';
+import * as cdk from "aws-cdk-lib";
+import { MonthlyEndBusinessDayCheckStack } from "../lib/monthly_end-business_day_check-stack";
 
 const app = new cdk.App();
-new MonthlyEndBusinessDayCheckStack(app, 'MonthlyEndBusinessDayCheckStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+// ──────────── 1) CLI の --context で渡された環境キーを取得 ────────────
+//      例: cdk deploy --context environment=production
+//      → rawEnvKey は "production"。指定しなければ cdk.json の "environment" 値 ("develop") が返る。
+const rawEnvKey = app.node.tryGetContext("environment") as string | undefined;
+if (!rawEnvKey) {
+	throw new Error(
+		'Context key "environment" is not defined. Please pass --context environment=<develop|production>',
+	);
+}
 
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
+// ──────────── 2) 環境キーが "develop" or "production" のどちらかを検証 ────────────
+const validEnvKeys = ["develop", "production"];
+if (!validEnvKeys.includes(rawEnvKey)) {
+	throw new Error(
+		`Invalid environment: "${rawEnvKey}". Expected one of ${validEnvKeys.join(", ")}`,
+	);
+}
+const envKey = rawEnvKey as "develop" | "production";
 
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-});
+// ──────────── 3) 環境キーに対応するコンテキストオブジェクトを一括取得 ────────────
+//      cdk.json の "context": { "develop": { … }, "production": { … } } を参照
+const envConfig = app.node.tryGetContext(envKey) as {
+	envType: string;
+};
+if (!envConfig) {
+	throw new Error(`Context for "${envKey}" is not defined in cdk.json`);
+}
+
+// ──────────── 4) 取得した envConfig からサフィックスや各種設定を取り出す ────────────
+const envType = envConfig.envType; // "dev" もしくは "prod"
+
+new MonthlyEndBusinessDayCheckStack(
+	app,
+	`MonthlyEndBusinessDayCheckStack-${envType}`,
+	{
+		envType,
+	},
+);
