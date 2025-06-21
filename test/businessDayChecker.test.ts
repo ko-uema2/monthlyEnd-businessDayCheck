@@ -42,13 +42,4 @@ describe("BusinessDayChecker", () => {
 		const checker = new BusinessDayChecker([]);
 		expect(checker.isLastBusinessDay(new Date("2024-09-30"))).toBe(true);
 	});
-
-	test("祝日がdateで与えられる場合は無視される(現実の仕様に注意)", () => {
-		// 実装上dateTimeしか見ていないためdateのみの祝日は無視される
-		const holidays: calendar_v3.Schema$Event[] = [
-			{ start: { date: "2024-07-31" } },
-		];
-		const checker = new BusinessDayChecker(holidays);
-		expect(checker.isLastBusinessDay(new Date("2024-07-31"))).toBe(true); // 無視される
-	});
 });

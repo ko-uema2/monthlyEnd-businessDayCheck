@@ -27,10 +27,20 @@ export class BusinessDayChecker {
 		}
 
 		// 祝日の判定
-		return this.holidays.some(
-			(holiday) =>
-				new Date(holiday.start?.dateTime ?? "").toDateString() ===
-				date.toDateString(),
-		);
+		return this.holidays.some((holiday) => {
+			// 終日イベントの場合（dateプロパティを使用）
+			if (holiday.start?.date) {
+				const holidayDate = new Date(holiday.start.date);
+				return holidayDate.toDateString() === date.toDateString();
+			}
+
+			// 時刻指定イベントの場合（dateTimeプロパティを使用）
+			if (holiday.start?.dateTime) {
+				const holidayDateTime = new Date(holiday.start.dateTime);
+				return holidayDateTime.toDateString() === date.toDateString();
+			}
+
+			return false;
+		});
 	}
 }
