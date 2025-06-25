@@ -3,9 +3,16 @@ import { BusinessDayChecker } from "../src/businessDayChecker";
 
 describe("BusinessDayChecker", () => {
 	// 祝日データのユーティリティ
-	const makeHoliday = (dateStr: string): calendar_v3.Schema$Event => ({
-		start: { dateTime: new Date(dateStr).toISOString() },
-	});
+        const makeHoliday = (dateStr: string): calendar_v3.Schema$Event => ({
+                start: { dateTime: new Date(dateStr).toISOString() },
+        });
+        const makeMultiDayHoliday = (
+                start: string,
+                end: string,
+        ): calendar_v3.Schema$Event => ({
+                start: { date: start },
+                end: { date: end },
+        });
 
 	test("月末が平日で祝日でない場合、その日が最終営業日", () => {
 		// 2024-07-31(水)は平日
@@ -38,8 +45,18 @@ describe("BusinessDayChecker", () => {
 		expect(checker.isLastBusinessDay(new Date("2024-08-31"))).toBe(false);
 	});
 
-	test("祝日がない場合の挙動", () => {
-		const checker = new BusinessDayChecker([]);
-		expect(checker.isLastBusinessDay(new Date("2024-09-30"))).toBe(true);
-	});
+        test("祝日がない場合の挙動", () => {
+                const checker = new BusinessDayChecker([]);
+                expect(checker.isLastBusinessDay(new Date("2024-09-30"))).toBe(true);
+        });
+
+        test("複数日に渡る祝日を考慮する", () => {
+                const holidays = [
+                        makeMultiDayHoliday("2024-07-30", "2024-08-02"),
+                ];
+                const checker = new BusinessDayChecker(holidays);
+                expect(checker.isLastBusinessDay(new Date("2024-07-29"))).toBe(true);
+                expect(checker.isLastBusinessDay(new Date("2024-07-30"))).toBe(false);
+                expect(checker.isLastBusinessDay(new Date("2024-07-31"))).toBe(false);
+        });
 });
