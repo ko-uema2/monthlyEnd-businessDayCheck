@@ -193,13 +193,29 @@ flowchart TD
   - LINE API: channelId, channelSecret, lineKid, linePrivateKey
   - Google Calendar API: calendarId, calendarPrivateKey, calendarClientEmail
 
-### 6.3 ログ出力仕様
+### 6.3 LINE API仕様
+
+- **使用SDK**: @line/bot-sdk
+- **使用クラス**: MessagingApiClient（messagingApi.MessagingApiClient）
+- **認証方式**: channelAccessToken
+- **送信方式**: プッシュメッセージ（指定ユーザーIDへの直接送信）
+- **メッセージ形式**: テキストメッセージ
+- **API呼び出し形式**:
+
+  ```typescript
+  await client.pushMessage({
+    to: userId,
+    messages: [{ type: "text", text: message }]
+  });
+  ```
+
+### 6.4 ログ出力仕様
 
 - **ログレベル**: info/error/warn
 - **出力形式**: JSON形式
 - **出力項目**: タイムスタンプ、ログレベル、メッセージ、エラー詳細
 
-### 6.4 クラス設計
+### 6.5 クラス設計
 
 - **ActionExecutor**: 月末最終営業日のアクション実行を担当
   - 責務：LINE通知とGoogleカレンダー予定追加の実行、アダプタークラスのインスタンス化
@@ -207,6 +223,13 @@ flowchart TD
   - `sendLineNotification()`: LINE通知送信（プライベート）
   - `addCalendarEvent()`: Googleカレンダー予定追加（プライベート）
   - コンストラクタ：認証情報を受け取り、LineNotifyAdapterとGoogleCalendarAdapterをインスタンス化
+
+- **LineNotifyAdapterクラス**: LINE通知送信を担当
+  - 責務：LINE Messaging APIを使用したプッシュメッセージ送信
+  - 使用API：@line/bot-sdk の MessagingApiClient
+  - `sendMessage()`: テキストメッセージの送信
+  - 認証：channelAccessTokenを使用したMessagingApiClient初期化
+  - 送信形式：プッシュメッセージ（指定ユーザーIDへの直接送信）
 
 ## 7. テスト計画
 
@@ -286,4 +309,12 @@ flowchart TD
 **文書作成日**: 2024年12月
 **作成者**: AI Assistant
 **承認者**: [要記入]
-**バージョン**: 1.1
+**バージョン**: 1.2
+
+## 変更履歴
+
+| バージョン | 日付 | 変更内容 | 変更者 |
+|------------|------|----------|--------|
+| 1.0 | 2024年12月 | 初版作成 | AI Assistant |
+| 1.1 | 2024年12月 | ActionExecutor責務分離、エラーハンドリング強化 | AI Assistant |
+| 1.2 | 2024年12月 | LINE API仕様更新（MessagingApiClient使用） | AI Assistant |
