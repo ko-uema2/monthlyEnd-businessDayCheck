@@ -7,7 +7,7 @@
 - **プロジェクト名**: 月末営業日チェックシステム
 - **要望ID**: REQ-001
 - **タイトル**: 月末の最終営業日当日に私自身に通知を送る
-- **作成日**: 2024年12月
+- **作成日**: 2025年6月
 
 ### 目的・背景・ゴール
 
@@ -196,7 +196,7 @@ flowchart TD
 ### 6.3 LINE API仕様
 
 - **使用SDK**: @line/bot-sdk
-- **使用クラス**: 
+- **使用クラス**:
   - MessagingApiClient（messagingApi.MessagingApiClient）
   - ChannelAccessTokenClient（channelAccessToken.ChannelAccessTokenClient）
 - **認証方式**: JWT認証（node-joseライブラリ使用）
@@ -212,6 +212,7 @@ flowchart TD
   - 引数: grant_type, client_assertion_type, client_assertion
   - 戻り値: access_token
 - **API呼び出し形式**:
+
   ```typescript
   await client.pushMessage({
     to: userId,
@@ -317,9 +318,17 @@ flowchart TD
 - コンテナ化
 - マルチリージョン対応
 
+## 11. アーキテクチャ決定レコード
+
+プロジェクトの重要な技術的決定は、[アーキテクチャ決定レコード（ADR）](./adr/)で管理されています。
+
+### 関連ADR
+
+- [ADR-001: LineNotifyAdapterでのMessagingApiClientの遅延インスタンス化](./adr/001-line-notify-adapter-messaging-client-instantiation.md)
+
 ---
 
-**文書作成日**: 2024年12月
+**文書作成日**: 2025年6月
 **作成者**: AI Assistant
 **承認者**: [要記入]
 **バージョン**: 1.4
@@ -328,8 +337,8 @@ flowchart TD
 
 | バージョン | 日付 | 変更内容 | 変更者 |
 |------------|------|----------|--------|
-| 1.0 | 2024年12月 | 初版作成 | AI Assistant |
-| 1.1 | 2024年12月 | ActionExecutor責務分離、エラーハンドリング強化 | AI Assistant |
-| 1.2 | 2024年12月 | LINE API仕様更新（MessagingApiClient使用） | AI Assistant |
-| 1.3 | 2024年12月 | JWT認証実装（node-joseライブラリ使用） | AI Assistant |
-| 1.4 | 2024年12月 | ChannelAccessTokenClient実装（issueChannelTokenByJWT使用） | AI Assistant |
+| 1.0 | 2025年6月 | 初版作成 | AI Assistant |
+| 1.1 | 2025年6月 | ActionExecutor責務分離、エラーハンドリング強化 | AI Assistant |
+| 1.2 | 2025年6月 | LINE API仕様更新（MessagingApiClient使用） | AI Assistant |
+| 1.3 | 2025年6月 | JWT認証実装（node-joseライブラリ使用） | AI Assistant |
+| 1.4 | 2025年6月 | ChannelAccessTokenClient実装（issueChannelTokenByJWT使用） | AI Assistant |
