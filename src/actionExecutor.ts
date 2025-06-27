@@ -3,8 +3,10 @@ import { LineNotifyAdapter } from "./lineNotify";
 
 export interface ActionExecutorConfig {
 	// LINE API認証情報
-	lineChannelSecret: string;
-	lineUserId: string;
+	channelId: string;
+	channelSecret: string;
+	lineKid: string;
+	linePrivateKey: string;
 	// Google Calendar API認証情報
 	googleClientEmail: string;
 	googlePrivateKey: string;
@@ -19,8 +21,10 @@ export class ActionExecutor {
 	constructor(config: ActionExecutorConfig) {
 		// LineNotifyAdapterのインスタンス化
 		this.lineNotify = new LineNotifyAdapter({
-			channelAccessToken: config.lineChannelSecret,
-			userId: config.lineUserId,
+			channelId: config.channelId,
+			channelSecret: config.channelSecret,
+			lineKid: config.lineKid,
+			linePrivateKey: config.linePrivateKey,
 		});
 
 		// GoogleCalendarAdapterのインスタンス化

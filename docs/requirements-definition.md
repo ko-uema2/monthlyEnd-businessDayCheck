@@ -196,12 +196,22 @@ flowchart TD
 ### 6.3 LINE API仕様
 
 - **使用SDK**: @line/bot-sdk
-- **使用クラス**: MessagingApiClient（messagingApi.MessagingApiClient）
-- **認証方式**: channelAccessToken
+- **使用クラス**: 
+  - MessagingApiClient（messagingApi.MessagingApiClient）
+  - ChannelAccessTokenClient（channelAccessToken.ChannelAccessTokenClient）
+- **認証方式**: JWT認証（node-joseライブラリ使用）
 - **送信方式**: プッシュメッセージ（指定ユーザーIDへの直接送信）
 - **メッセージ形式**: テキストメッセージ
+- **JWTトークン生成**:
+  - ライブラリ: node-jose
+  - アルゴリズム: RS256
+  - ヘッダー: alg, typ, kid
+  - ペイロード: iss, sub, aud, exp, token_exp
+- **チャンネルアクセストークン取得**:
+  - メソッド: ChannelAccessTokenClient.issueChannelTokenByJWT
+  - 引数: grant_type, client_assertion_type, client_assertion
+  - 戻り値: access_token
 - **API呼び出し形式**:
-
   ```typescript
   await client.pushMessage({
     to: userId,
@@ -226,9 +236,12 @@ flowchart TD
 
 - **LineNotifyAdapterクラス**: LINE通知送信を担当
   - 責務：LINE Messaging APIを使用したプッシュメッセージ送信
-  - 使用API：@line/bot-sdk の MessagingApiClient
+  - 使用API：@line/bot-sdk の MessagingApiClient、ChannelAccessTokenClient
+  - 認証方式：JWT認証（node-joseライブラリ使用）
   - `sendMessage()`: テキストメッセージの送信
-  - 認証：channelAccessTokenを使用したMessagingApiClient初期化
+  - `generateChannelAccessToken()`: JWTトークンを使用したチャンネルアクセストークン生成
+  - 認証：channelId、lineKid、linePrivateKeyを使用したJWT認証
+  - チャンネルアクセストークン取得：ChannelAccessTokenClient.issueChannelTokenByJWTメソッド使用
   - 送信形式：プッシュメッセージ（指定ユーザーIDへの直接送信）
 
 ## 7. テスト計画
@@ -309,7 +322,7 @@ flowchart TD
 **文書作成日**: 2024年12月
 **作成者**: AI Assistant
 **承認者**: [要記入]
-**バージョン**: 1.2
+**バージョン**: 1.4
 
 ## 変更履歴
 
@@ -318,3 +331,5 @@ flowchart TD
 | 1.0 | 2024年12月 | 初版作成 | AI Assistant |
 | 1.1 | 2024年12月 | ActionExecutor責務分離、エラーハンドリング強化 | AI Assistant |
 | 1.2 | 2024年12月 | LINE API仕様更新（MessagingApiClient使用） | AI Assistant |
+| 1.3 | 2024年12月 | JWT認証実装（node-joseライブラリ使用） | AI Assistant |
+| 1.4 | 2024年12月 | ChannelAccessTokenClient実装（issueChannelTokenByJWT使用） | AI Assistant |
