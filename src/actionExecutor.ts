@@ -1,9 +1,13 @@
-import type { GoogleCalendarAdapter } from "./googleCalendar";
-import type { LineNotifyAdapter } from "./lineNotify";
+import { GoogleCalendarAdapter } from "./googleCalendar";
+import { LineNotifyAdapter } from "./lineNotify";
 
 export interface ActionExecutorConfig {
-	lineNotify: LineNotifyAdapter;
-	googleCalendar: GoogleCalendarAdapter;
+	// LINE API認証情報
+	lineChannelSecret: string;
+	lineUserId: string;
+	// Google Calendar API認証情報
+	googleClientEmail: string;
+	googlePrivateKey: string;
 	calendarId: string;
 }
 
@@ -13,8 +17,18 @@ export class ActionExecutor {
 	private calendarId: string;
 
 	constructor(config: ActionExecutorConfig) {
-		this.lineNotify = config.lineNotify;
-		this.googleCalendar = config.googleCalendar;
+		// LineNotifyAdapterのインスタンス化
+		this.lineNotify = new LineNotifyAdapter({
+			channelAccessToken: config.lineChannelSecret,
+			userId: config.lineUserId,
+		});
+
+		// GoogleCalendarAdapterのインスタンス化
+		this.googleCalendar = new GoogleCalendarAdapter({
+			clientEmail: config.googleClientEmail,
+			privateKey: config.googlePrivateKey,
+		});
+
 		this.calendarId = config.calendarId;
 	}
 

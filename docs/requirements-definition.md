@@ -119,6 +119,7 @@ flowchart TD
 - **責務分離**: 各クラス・モジュールの単一責任原則
 - **依存性注入**: 外部サービスとの疎結合
 - **アクション実行の責務分離**: ActionExecutorクラスによるアクション実行の集約
+- **カプセル化**: ActionExecutorがアダプターのインスタンス化と管理を担当
 
 ### 4.2 データ設計
 
@@ -201,9 +202,11 @@ flowchart TD
 ### 6.4 クラス設計
 
 - **ActionExecutor**: 月末最終営業日のアクション実行を担当
+  - 責務：LINE通知とGoogleカレンダー予定追加の実行、アダプタークラスのインスタンス化
   - `executeMonthlyEndActions()`: LINE通知とカレンダー予定追加を一括実行
   - `sendLineNotification()`: LINE通知送信（プライベート）
   - `addCalendarEvent()`: Googleカレンダー予定追加（プライベート）
+  - コンストラクタ：認証情報を受け取り、LineNotifyAdapterとGoogleCalendarAdapterをインスタンス化
 
 ## 7. テスト計画
 
