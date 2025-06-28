@@ -20,27 +20,34 @@ export class BusinessDayChecker {
 		return checkingDate;
 	}
 
-	private isHoliday(date: Date): boolean {
-		// 土日の判定
-		if (isWeekend(date)) {
-			return true;
-		}
+        private isHoliday(date: Date): boolean {
+                // 土日の判定
+                if (isWeekend(date)) {
+                        return true;
+                }
 
-		// 祝日の判定
-		return this.holidays.some((holiday) => {
-			// 終日イベントの場合（dateプロパティを使用）
-			if (holiday.start?.date) {
-				const holidayDate = new Date(holiday.start.date);
-				return holidayDate.toDateString() === date.toDateString();
-			}
+                // 祝日の判定
+                return this.holidays.some((holiday) => {
+                        const start = holiday.start?.date
+                                ? new Date(holiday.start.date)
+                                : holiday.start?.dateTime
+                                ? new Date(holiday.start.dateTime)
+                                : undefined;
+                        if (!start) {
+                                return false;
+                        }
 
-			// 時刻指定イベントの場合（dateTimeプロパティを使用）
-			if (holiday.start?.dateTime) {
-				const holidayDateTime = new Date(holiday.start.dateTime);
-				return holidayDateTime.toDateString() === date.toDateString();
-			}
+                        const end = holiday.end?.date
+                                ? new Date(holiday.end.date)
+                                : holiday.end?.dateTime
+                                ? new Date(holiday.end.dateTime)
+                                : undefined;
 
-			return false;
-		});
-	}
+                        if (end) {
+                                return start <= date && date < end;
+                        }
+
+                        return start.toDateString() === date.toDateString();
+                });
+        }
 }
