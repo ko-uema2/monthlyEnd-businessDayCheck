@@ -245,6 +245,21 @@ flowchart TD
   - チャンネルアクセストークン取得：ChannelAccessTokenClient.issueChannelTokenByJWTメソッド使用
   - 送信形式：プッシュメッセージ（指定ユーザーIDへの直接送信）
 
+- **GoogleCalendarHolidayFetcherクラス**: Google Calendarからの祝日情報取得を担当
+  - 責務：Google Calendar APIを使用した祝日情報の読み取り
+  - `fetchHolidays()`: 指定日付の祝日情報を取得
+  - 認証：Google Calendar API認証情報（clientEmail、privateKey）
+
+- **GoogleCalendarEventCreatorクラス**: Google Calendarへのイベント追加を担当
+  - 責務：Google Calendar APIを使用したイベントの書き込み
+  - `addEvent()`: イベントの追加（リマインド設定含む）
+  - 認証：Google Calendar API認証情報（clientEmail、privateKey）
+  - リマインド設定：3時間前、2時間前、1時間前
+
+- **GoogleCalendarBaseクラス**: Google Calendar APIの共通認証処理を提供
+  - 責務：Google Calendar APIの認証設定
+  - 基底クラス：GoogleCalendarHolidayFetcherとGoogleCalendarEventCreatorの共通処理
+
 ## 7. テスト計画
 
 ### 7.1 単体テスト
@@ -252,7 +267,8 @@ flowchart TD
 - BusinessDayCheckerクラス
 - SecretsManagerAdapterクラス
 - ActionExecutorクラス
-- GoogleCalendarAdapterクラス
+- GoogleCalendarHolidayFetcherクラス
+- GoogleCalendarEventCreatorクラス
 - LineNotifyAdapterクラス
 
 ### 7.2 統合テスト
@@ -325,13 +341,14 @@ flowchart TD
 ### 関連ADR
 
 - [ADR-001: LineNotifyAdapterでのMessagingApiClientの遅延インスタンス化](./adr/001-line-notify-adapter-messaging-client-instantiation.md)
+- [ADR-002: Google Calendarクラスの責務分離](./adr/002-google-calendar-class-separation.md)
 
 ---
 
 **文書作成日**: 2025年6月
 **作成者**: AI Assistant
 **承認者**: [要記入]
-**バージョン**: 1.4
+**バージョン**: 1.5
 
 ## 変更履歴
 
@@ -342,3 +359,4 @@ flowchart TD
 | 1.2 | 2025年6月 | LINE API仕様更新（MessagingApiClient使用） | AI Assistant |
 | 1.3 | 2025年6月 | JWT認証実装（node-joseライブラリ使用） | AI Assistant |
 | 1.4 | 2025年6月 | ChannelAccessTokenClient実装（issueChannelTokenByJWT使用） | AI Assistant |
+| 1.5 | 2025年6月 | Google Calendarクラス分割（HolidayFetcher/EventCreator責務分離） | AI Assistant |

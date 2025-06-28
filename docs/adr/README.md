@@ -7,6 +7,7 @@
 | ADR番号 | タイトル | ステータス | 日付 |
 |---------|----------|------------|------|
 | [ADR-001](./001-line-notify-adapter-messaging-client-instantiation.md) | LineNotifyAdapterでのMessagingApiClientの遅延インスタンス化 | 承認済み | 2025年6月 |
+| [ADR-002](./002-google-calendar-class-separation.md) | Google Calendarクラスの責務分離 | 承認済み | 2025年6月 |
 
 ## ADRとは
 

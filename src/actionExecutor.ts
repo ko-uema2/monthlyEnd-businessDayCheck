@@ -1,4 +1,4 @@
-import { GoogleCalendarAdapter } from "./googleCalendar";
+import { GoogleCalendarEventCreator } from "./googleCalendar";
 import { LineNotifyAdapter } from "./lineNotify";
 
 export interface ActionExecutorConfig {
@@ -15,7 +15,7 @@ export interface ActionExecutorConfig {
 
 export class ActionExecutor {
 	private lineNotify: LineNotifyAdapter;
-	private googleCalendar: GoogleCalendarAdapter;
+	private googleCalendar: GoogleCalendarEventCreator;
 	private calendarId: string;
 
 	constructor(config: ActionExecutorConfig) {
@@ -27,8 +27,8 @@ export class ActionExecutor {
 			linePrivateKey: config.linePrivateKey,
 		});
 
-		// GoogleCalendarAdapterのインスタンス化
-		this.googleCalendar = new GoogleCalendarAdapter({
+		// GoogleCalendarEventCreatorのインスタンス化
+		this.googleCalendar = new GoogleCalendarEventCreator({
 			clientEmail: config.googleClientEmail,
 			privateKey: config.googlePrivateKey,
 		});
