@@ -60,6 +60,7 @@ export const handler = async (event: ScheduledEvent): Promise<void> => {
 			channelSecret: credentials.channelSecret,
 			lineKid: credentials.lineKid,
 			linePrivateKey: credentials.linePrivateKey,
+			lineUserId: credentials.lineUserId,
 			googleClientEmail: credentials.calendarClientEmail,
 			googlePrivateKey: credentials.calendarPrivateKey,
 			calendarId: credentials.calendarId,

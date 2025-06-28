@@ -202,11 +202,15 @@ flowchart TD
 - **認証方式**: JWT認証（node-joseライブラリ使用）
 - **送信方式**: プッシュメッセージ（指定ユーザーIDへの直接送信）
 - **メッセージ形式**: テキストメッセージ
+- **認証情報形式**:
+  - linePrivateKey: JSONオブジェクト形式（JWK形式）
+  - 文字列形式は非対応（Secrets Managerから取得時はオブジェクト形式）
 - **JWTトークン生成**:
   - ライブラリ: node-jose
   - アルゴリズム: RS256
   - ヘッダー: alg, typ, kid
   - ペイロード: iss, sub, aud, exp, token_exp
+  - プライベートキー処理: オブジェクト形式を直接使用（JSON.parse()不要）
 - **チャンネルアクセストークン取得**:
   - メソッド: ChannelAccessTokenClient.issueChannelTokenByJWT
   - 引数: grant_type, client_assertion_type, client_assertion
@@ -242,6 +246,7 @@ flowchart TD
   - `sendMessage()`: テキストメッセージの送信
   - `generateChannelAccessToken()`: JWTトークンを使用したチャンネルアクセストークン生成
   - 認証：channelId、lineKid、linePrivateKeyを使用したJWT認証
+  - linePrivateKey処理：オブジェクト形式を直接使用（JSON.parse()処理なし）
   - チャンネルアクセストークン取得：ChannelAccessTokenClient.issueChannelTokenByJWTメソッド使用
   - 送信形式：プッシュメッセージ（指定ユーザーIDへの直接送信）
 
@@ -327,12 +332,14 @@ flowchart TD
 - 外部API（LINE、Google Calendar）の障害
 - AWS Secrets Managerの認証情報漏洩
 - Lambda関数のタイムアウト
+- 認証情報形式の不整合（linePrivateKeyの形式エラー）
 
 ### 9.2 対策
 
 - 適切なエラーハンドリングと再試行処理
 - 認証情報の定期的な更新
 - タイムアウト設定の最適化
+- 認証情報形式の統一（linePrivateKeyはオブジェクト形式で管理）
 
 ## 10. 今後の拡張性
 
@@ -364,7 +371,7 @@ flowchart TD
 **文書作成日**: 2025年6月
 **作成者**: AI Assistant
 **承認者**: [要記入]
-**バージョン**: 1.5
+**バージョン**: 1.6
 
 ## 変更履歴
 
@@ -376,3 +383,4 @@ flowchart TD
 | 1.3 | 2025年6月 | JWT認証実装（node-joseライブラリ使用） | AI Assistant |
 | 1.4 | 2025年6月 | ChannelAccessTokenClient実装（issueChannelTokenByJWT使用） | AI Assistant |
 | 1.5 | 2025年6月 | Google Calendarクラス分割（HolidayFetcher/EventCreator責務分離） | AI Assistant |
+| 1.6 | 2025年6月 | LINE Notify API認証処理修正（linePrivateKeyオブジェクト形式対応） | AI Assistant |

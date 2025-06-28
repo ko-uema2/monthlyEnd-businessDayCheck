@@ -6,7 +6,8 @@ export interface ActionExecutorConfig {
 	channelId: string;
 	channelSecret: string;
 	lineKid: string;
-	linePrivateKey: string;
+	linePrivateKey: object;
+	lineUserId: string;
 	// Google Calendar API認証情報
 	googleClientEmail: string;
 	googlePrivateKey: string;
@@ -25,6 +26,7 @@ export class ActionExecutor {
 			channelSecret: config.channelSecret,
 			lineKid: config.lineKid,
 			linePrivateKey: config.linePrivateKey,
+			userId: config.lineUserId,
 		});
 
 		// GoogleCalendarEventCreatorのインスタンス化
@@ -64,7 +66,7 @@ export class ActionExecutor {
 			currentDate.getFullYear(),
 			currentDate.getMonth(),
 			currentDate.getDate(),
-			17,
+			8,
 			0,
 			0,
 		); // 17:00 JST
@@ -72,7 +74,7 @@ export class ActionExecutor {
 			currentDate.getFullYear(),
 			currentDate.getMonth(),
 			currentDate.getDate(),
-			17,
+			8,
 			15,
 			0,
 		); // 17:15 JST

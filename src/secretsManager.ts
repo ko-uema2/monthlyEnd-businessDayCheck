@@ -7,7 +7,8 @@ export interface Credentials {
 	channelId: string;
 	channelSecret: string;
 	lineKid: string;
-	linePrivateKey: string;
+	linePrivateKey: object;
+	lineUserId: string;
 	calendarId: string;
 	calendarPrivateKey: string;
 	calendarClientEmail: string;
@@ -59,6 +60,7 @@ export class SecretsManagerAdapter {
 			!("channelSecret" in credentials) ||
 			!("lineKid" in credentials) ||
 			!("linePrivateKey" in credentials) ||
+			!("lineUserId" in credentials) ||
 			!("calendarId" in credentials) ||
 			!("calendarPrivateKey" in credentials) ||
 			!("calendarClientEmail" in credentials)

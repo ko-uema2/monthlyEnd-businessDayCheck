@@ -8,7 +8,8 @@ export interface LineNotifyConfig {
 	channelId: string;
 	channelSecret: string;
 	lineKid: string;
-	linePrivateKey: string;
+	linePrivateKey: object;
+	userId: string;
 }
 
 export class LineNotifyAdapter {
@@ -17,14 +18,14 @@ export class LineNotifyAdapter {
 	private channelId: string;
 	private channelSecret: string;
 	private lineKid: string;
-	private linePrivateKey: string;
+	private linePrivateKey: object;
 
 	constructor(config: LineNotifyConfig) {
 		this.channelId = config.channelId;
 		this.channelSecret = config.channelSecret;
 		this.lineKid = config.lineKid;
 		this.linePrivateKey = config.linePrivateKey;
-		this.userId = config.lineKid; // lineKidをuserIdとして使用
+		this.userId = config.userId;
 	}
 
 	private async generateChannelAccessToken(): Promise<string> {
@@ -45,14 +46,14 @@ export class LineNotifyAdapter {
 				token_exp: 60 * 60 * 24 * 30, // 30日
 			};
 
-			// プライベートキーをパース
-			const privateKey = JSON.parse(this.linePrivateKey);
+			// プライベートキーの処理
+			const privateKey = this.linePrivateKey as jose.JWK.Key;
 
 			// JWTトークンを生成
 			const jwtToken = await (
 				jose.JWS.createSign(
 					{ format: "compact", fields: header },
-					privateKey as jose.JWK.Key,
+					privateKey,
 				) as jose.JWS.Signer
 			)
 				.update(JSON.stringify(payload))
