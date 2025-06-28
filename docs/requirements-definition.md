@@ -260,6 +260,22 @@ flowchart TD
   - 責務：Google Calendar APIの認証設定
   - 基底クラス：GoogleCalendarHolidayFetcherとGoogleCalendarEventCreatorの共通処理
 
+### 6.6 Lambda関数仕様
+
+- **トリガー**: EventBridge Scheduled Event
+- **実行頻度**: 毎日朝9時（JST）
+- **イベント処理**: EventBridgeのScheduledEventオブジェクトから実行日時を取得
+- **営業日判定**: EventBridgeの実行日時を基に月末最終営業日を判定
+- **タイムアウト**: 30秒
+- **メモリ**: 256MB
+
+### 6.7 EventBridge仕様
+
+- **イベントタイプ**: Scheduled Event
+- **スケジュール式**: `cron(0 0 9 * * ? *)` (毎日朝9時JST)
+- **イベント構造**: AWS標準のScheduledEvent形式
+- **実行日時**: イベントオブジェクトの`time`フィールド（ISO 8601形式）
+
 ## 7. テスト計画
 
 ### 7.1 単体テスト
