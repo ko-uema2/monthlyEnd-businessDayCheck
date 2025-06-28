@@ -80,7 +80,7 @@ show_usage() {
     echo "  $0 production my-sso-profile --dry-run"
     echo ""
     echo "必要なファイル:"
-    echo "  .env: LINE_CHANNEL_ID, LINE_CHANNEL_SECRET, LINE_KID, GOOGLE_CALENDAR_ID"
+    echo "  .env: LINE_CHANNEL_ID, LINE_CHANNEL_SECRET, LINE_KID, LINE_USER_ID, GOOGLE_CALENDAR_ID"
     echo "  line-private-key.json: LINE Messaging API の秘密鍵ファイル"
     echo "  google-private-key.json: Google Calendar API の秘密鍵情報（private_key, client_email）"
 }
@@ -137,6 +137,7 @@ validate_env_vars() {
         "LINE_CHANNEL_ID"
         "LINE_CHANNEL_SECRET"
         "LINE_KID"
+        "LINE_USER_ID"
         "GOOGLE_CALENDAR_ID"
     )
     missing_vars=()
@@ -172,7 +173,7 @@ load_private_keys() {
     fi
     log_info "Google秘密鍵ファイルから設定を読み込み中..."
     if [ -f "$GOOGLE_PRIVATE_KEY_FILE" ]; then
-        GOOGLE_CALENDAR_PRIVATE_KEY=$(jq -r '.private_key' "$GOOGLE_PRIVATE_KEY_FILE" | tr -d '\n ')
+        GOOGLE_CALENDAR_PRIVATE_KEY=$(jq -r '.private_key' "$GOOGLE_PRIVATE_KEY_FILE")
         GOOGLE_CALENDAR_CLIENT_EMAIL=$(jq -r '.client_email' "$GOOGLE_PRIVATE_KEY_FILE")
         if [ "$GOOGLE_CALENDAR_PRIVATE_KEY" = "null" ] || [ "$GOOGLE_CALENDAR_CLIENT_EMAIL" = "null" ]; then
             log_error "google-private-key.jsonから必要な情報を読み取れませんでした"
@@ -187,6 +188,7 @@ gen_secret_value() {
       --arg channelId "$LINE_CHANNEL_ID" \
       --arg channelSecret "$LINE_CHANNEL_SECRET" \
       --arg lineKid "$LINE_KID" \
+      --arg lineUserId "$LINE_USER_ID" \
       --arg calendarId "$GOOGLE_CALENDAR_ID" \
       --arg calendarClientEmail "$GOOGLE_CALENDAR_CLIENT_EMAIL" \
       --arg calendarPrivateKey "$GOOGLE_CALENDAR_PRIVATE_KEY" \
@@ -195,6 +197,7 @@ gen_secret_value() {
         channelId: $channelId,
         channelSecret: $channelSecret,
         lineKid: $lineKid,
+        lineUserId: $lineUserId,
         calendarId: $calendarId,
         calendarClientEmail: $calendarClientEmail,
         calendarPrivateKey: $calendarPrivateKey,
